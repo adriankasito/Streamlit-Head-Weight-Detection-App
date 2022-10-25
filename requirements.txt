@@ -5,3 +5,4 @@ protobuf
 pip
 openpyxl
 matplotlib
+sklearn
