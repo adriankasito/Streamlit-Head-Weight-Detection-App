@@ -4,3 +4,4 @@ pydeck
 protobuf
 pip
 openpyxl
+matplotlib
