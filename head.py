@@ -5,7 +5,7 @@ import pydeck as pdk
 import plotly.express as px
 import plotly.graph_objects as go
 
-data_url= ('D:\Data Science\head_brain\headbrain.xlsx')
+data_url= ('headbrain.xlsx')
 
 st.title("Head Size Detection")
 st.markdown("This streamlit web application is a dashboard for detecting human head sizes 🗣")
