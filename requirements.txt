@@ -7,3 +7,9 @@ openpyxl
 matplotlib
 sklearn
 pickle
+plotly
+scipy
+pandas
+Flask
+flask-cors
+pyforest
