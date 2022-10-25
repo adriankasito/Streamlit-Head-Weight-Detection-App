@@ -5,7 +5,6 @@ pip
 openpyxl
 matplotlib
 sklearn
-pickle
 plotly
 scipy
 pandas
