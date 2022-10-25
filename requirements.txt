@@ -1,5 +1,4 @@
 streamlit 
-plotly.express
 pydeck
 protobuf
 pip
@@ -10,6 +9,3 @@ pickle
 plotly
 scipy
 pandas
-Flask
-flask-cors
-pyforest
