@@ -159,7 +159,7 @@ def main():
     result=""
     if st.button("Predict"):
         result=predict_value(headsize, agerange, Gender) #result will be displayed if button is pressed
-    st.success("The head weight of that person is :{}".format(result))
+    st.success("The head weight of that person is : {}g ".format(result))
 
 if __name__=='__main__':
     main()
