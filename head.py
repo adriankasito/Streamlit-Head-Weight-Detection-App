@@ -40,15 +40,10 @@ st.write(fig)
 
 st.subheader("Relationship between brain weight and head size")
 fig_1 = px.scatter(data, x='head_size', y='brain_weight', color='age_range', title='Scatter plot showing relationship between brain weight and head size by the age range')
-fig_1.update_traces(showlegend=False)
-fig_1.update_layout(legend=dict(title_text='Age Range'))
+st.write(fig_1.update_traces(showlegend=False))
 
 fig_2 = px.scatter(data, x='head_size', y='brain_weight', color='gender', title='Scatter plot showing relationship between brain weight and head size according to the gender')
-fig_2.update_traces(showlegend=False)
-fig_2.update_layout(legend=dict(title_text='Gender'))
-
-st.write(fig_1)
-st.write(fig_2)
+st.write(fig_2.update_traces(showlegend=False))
 
 st.subheader("Random Forest Regressor")
 X = data[['head_size', 'age_range', 'gender']]
