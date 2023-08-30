@@ -1,14 +1,41 @@
 import pandas as pd
 import streamlit as st
+import plotly.express as px
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import r2_score
 from sklearn.model_selection import train_test_split
 import pickle
+import plotly.express as px
+
+# Add CSS styling
+st.markdown("""
+<style>
+    .main-title {
+        text-align: center;
+        color: #2f4f4f;
+        padding: 20px;
+        font-size: 30px;
+        font-weight: bold;
+    }
+    .header {
+        text-align: center;
+        color: #4682b4;
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+    .footer {
+        text-align: center;
+        color: #808080;
+        font-size: 14px;
+    }
+</style>
+""", unsafe_allow_html=True)
 
 data_url = 'headbrain.xlsx'
 
-st.title("Head Size Detection")
-st.markdown("<h2 style='text-align: center;'>Human Head Size Detection Dashboard</h2>", unsafe_allow_html=True)
+# Main title
+st.markdown("<div class='main-title'>Head Size Detection</div>", unsafe_allow_html=True)
 
 def load_data():
     data = pd.read_excel(data_url)
@@ -19,17 +46,26 @@ data = load_data()
 
 if st.checkbox('Show Dataset', True):
     st.subheader("Dataset")
-    st.write(data)
+    st.dataframe(data, height=300)
+
+# Stylish header
+st.markdown("<div class='header'>Dataset Insights</div>", unsafe_allow_html=True)
 
 st.subheader("Dataset Size")
 st.write(f"Number of Rows: {data.shape[0]}, Number of Columns: {data.shape[1]}")
 
+# Add color to charts
 st.subheader("Breakdown of Head Size and Weight by Gender")
-st.plotly_chart(px.violin(data, x='gender', y='brain_weight', points="all", box=True, color='gender', title='Brain Weight Distribution by Gender'))
+fig_violin = px.violin(data, x='gender', y='brain_weight', points="all", box=True, color='gender', title='Brain Weight Distribution by Gender')
+fig_violin.update_traces(marker=dict(size=5, opacity=0.7), line=dict(width=2))
+st.plotly_chart(fig_violin)
 
 st.subheader("Relationship between Brain Weight and Head Size")
-st.plotly_chart(px.scatter(data, x='head_size', y='brain_weight', color='age_range', title='Brain Weight vs Head Size by Age Range', labels={'head_size': 'Head Size', 'brain_weight': 'Brain Weight'}))
+fig_scatter_age = px.scatter(data, x='head_size', y='brain_weight', color='age_range', title='Brain Weight vs Head Size by Age Range', labels={'head_size': 'Head Size', 'brain_weight': 'Brain Weight'})
+fig_scatter_age.update_traces(marker=dict(size=8, opacity=0.7))
+st.plotly_chart(fig_scatter_age)
 
+# Add color to model info
 st.subheader("Random Forest Regressor")
 X = data[['head_size', 'age_range', 'gender']]
 y = data['brain_weight']
@@ -47,24 +83,28 @@ st.write("The model is built and saved for future use")
 with open('random_forest.pkl', 'wb') as pkl_file:
     pickle.dump(reg, pkl_file)
 
-st.subheader("Head Weight Prediction App")
+# Stylish header for app
+st.markdown("<div class='header'>Head Weight Prediction App</div>", unsafe_allow_html=True)
 
 with open("random_forest.pkl", "rb") as pkl_file:
     regressor = pickle.load(pkl_file)
 
 def predict_value(head_size, age_range, gender):
     prediction = regressor.predict([[head_size, age_range, gender]])
-    return prediction
+    return prediction[0]
 
-st.markdown("<h3 style='text-align: center;'>Predict Head Weight Using Machine Learning</h3>", unsafe_allow_html=True)
-
-head_size = st.slider("Head Size (cm^3)", 2500, 5000)
-age_range = st.slider("Age Range", 1, 2)
-gender = st.selectbox("Gender", ["Male", "Female"])
+# Add colorful sliders
+st.markdown("<div class='header'>Predict Head Weight</div>", unsafe_allow_html=True)
+head_size = st.slider("Head Size (cm³)", 2500, 5000, 3750)
+age_range = st.selectbox("Age Range", [1, 2], format_func=lambda x: "Age 1" if x == 1 else "Age 2", index=0)
+gender = st.selectbox("Gender", ["Male", "Female"], index=0)
 
 if st.button("Predict"):
     result = predict_value(head_size, age_range, gender)
-    st.success(f"The estimated head weight is: {result[0]:.2f} grams")
+    st.success(f"The estimated head weight is: {result:.2f} grams")
 
 # Add an image
-st.image("your_image_path.png", caption="Human Brain Image", use_column_width=True)
+st.image("head.png", caption="Human Brain Image", use_column_width=True)
+
+# Stylish footer
+st.markdown("<div class='footer'>Developed by Your Name &copy; 2023</div>", unsafe_allow_html=True)
