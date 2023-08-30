@@ -21,7 +21,7 @@ def main():
     )
 
     # Add an image
-    st.image("your_image_path.png", use_column_width=True)
+    st.image("head.png", use_column_width=True)
 
     # Use sliders for user input
     headsize = st.slider("Select Head Size:", 2500, 5000)
