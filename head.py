@@ -1,9 +1,5 @@
 import pandas as pd
-import numpy as np
 import streamlit as st
-import pydeck as pdk
-import plotly.express as px
-import plotly.graph_objects as go
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import r2_score
 from sklearn.model_selection import train_test_split
@@ -12,42 +8,31 @@ import pickle
 data_url = 'headbrain.xlsx'
 
 st.title("Head Size Detection")
-st.markdown("This streamlit web application is a dashboard for detecting human head sizes 🗣")
+st.markdown("<h2 style='text-align: center;'>Human Head Size Detection Dashboard</h2>", unsafe_allow_html=True)
 
 def load_data():
     data = pd.read_excel(data_url)
-    lowercase = lambda x: str(x).lower()
-    data.rename(lowercase, axis='columns', inplace=True)
-    data.rename(columns={'age range': 'age_range', 'head size(cm^3)': 'head_size', 'head size': 'head_size', 'brain weight(grams)': 'brain_weight'}, inplace=True)
+    data.rename(columns={'age range': 'age_range', 'head size(cm^3)': 'head_size', 'brain weight(grams)': 'brain_weight'}, inplace=True)
     return data
 
 data = load_data()
 
-if st.checkbox('Show dataset', True):
+if st.checkbox('Show Dataset', True):
     st.subheader("Dataset")
     st.write(data)
 
-st.subheader("Size of the dataset")
-st.write('data_shape', data.shape)
+st.subheader("Dataset Size")
+st.write(f"Number of Rows: {data.shape[0]}, Number of Columns: {data.shape[1]}")
 
-st.subheader("Breakdown of head size and weight by gender")
-fig = px.violin(data, x='gender', y='brain_weight', height=500, width=900, points="all", box=True, color='gender', title='Violin plot with boxes showing breakdown of brain weight within different gender')
-newnames = {'1': 'Male', '2': 'Female'}
-fig.for_each_trace(lambda t: t.update(name=newnames[t.name],
-                                      legendgroup=newnames[t.name],
-                                      hovertemplate=t.hovertemplate.replace(t.name, newnames[t.name])))
-st.write(fig)
+st.subheader("Breakdown of Head Size and Weight by Gender")
+st.plotly_chart(px.violin(data, x='gender', y='brain_weight', points="all", box=True, color='gender', title='Brain Weight Distribution by Gender'))
 
-st.subheader("Relationship between brain weight and head size")
-fig_1 = px.scatter(data, x='head_size', y='brain_weight', color='age_range', title='Scatter plot showing relationship between brain weight and head size by the age range')
-st.write(fig_1.update_traces(showlegend=False))
-
-fig_2 = px.scatter(data, x='head_size', y='brain_weight', color='gender', title='Scatter plot showing relationship between brain weight and head size according to the gender')
-st.write(fig_2.update_traces(showlegend=False))
+st.subheader("Relationship between Brain Weight and Head Size")
+st.plotly_chart(px.scatter(data, x='head_size', y='brain_weight', color='age_range', title='Brain Weight vs Head Size by Age Range', labels={'head_size': 'Head Size', 'brain_weight': 'Brain Weight'}))
 
 st.subheader("Random Forest Regressor")
 X = data[['head_size', 'age_range', 'gender']]
-y = data['brain_weight'].values
+y = data['brain_weight']
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, random_state=1)
 
@@ -56,35 +41,30 @@ reg.fit(X_train, y_train)
 y_train_pred = reg.predict(X_train)
 r2_train_score = r2_score(y_train, y_train_pred)
 
-st.write("R-Squared using Random Forest Regressor: ", r2_train_score)
+st.write(f"R-Squared using Random Forest Regressor: {r2_train_score:.2f}")
 
-st.write("The model is built, now the model is pickled so that it can be used in the future")
-pickle.dump(reg, open('random_forest.pkl', 'wb'))
+st.write("The model is built and saved for future use")
+with open('random_forest.pkl', 'wb') as pkl_file:
+    pickle.dump(reg, pkl_file)
 
-st.subheader("APP")
+st.subheader("Head Weight Prediction App")
 
-pickle_a = open("random_forest.pkl", "rb")
-regressor = pickle.load(pickle_a)  # our model
+with open("random_forest.pkl", "rb") as pkl_file:
+    regressor = pickle.load(pkl_file)
 
-def predict_value(headsize, agerange, gender):
-    prediction = regressor.predict([[headsize, agerange, gender]])  # predictions using our model
+def predict_value(head_size, age_range, gender):
+    prediction = regressor.predict([[head_size, age_range, gender]])
     return prediction
 
-def main():
-    st.title("Head weight prediction APP using ML")
-    html_temp = """
-        <div>
-        <h2>Head Weight Prediction ML App</h2>
-        </div>
-        """
-    st.markdown(html_temp, unsafe_allow_html=True)
-    headsize = st.slider("head_size", 2500, 5000)
-    agerange = st.slider("age_range", 1, 2)
-    gender = st.slider("gender", 1, 2)
-    result = ""
-    if st.button("Predict"):
-        result = predict_value(headsize, agerange, gender)
-    st.success("The head weight of that person is: {} grams".format(result))
+st.markdown("<h3 style='text-align: center;'>Predict Head Weight Using Machine Learning</h3>", unsafe_allow_html=True)
 
-if __name__ == '__main__':
-    main()
+head_size = st.slider("Head Size (cm^3)", 2500, 5000)
+age_range = st.slider("Age Range", 1, 2)
+gender = st.selectbox("Gender", ["Male", "Female"])
+
+if st.button("Predict"):
+    result = predict_value(head_size, age_range, gender)
+    st.success(f"The estimated head weight is: {result[0]:.2f} grams")
+
+# Add an image
+st.image("your_image_path.png", caption="Human Brain Image", use_column_width=True)
