@@ -3,7 +3,7 @@ import numpy as np
 import streamlit as st
 import pydeck as pdk
 import plotly.express as px
-import plotly.graph_objs as go
+import plotly.graph_objects as go
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import r2_score
 from sklearn.model_selection import train_test_split
