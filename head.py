@@ -11,8 +11,10 @@ import pickle
 
 data_url = 'headbrain.xlsx'
 
-st.title("Head Size Detection")
-st.markdown("This streamlit web application is a dashboard for detecting human head sizes 🗣")
+#st.title("Head Size Detection")
+st.markdown('<h1 style="color:cyan; font-style:italic;">Detecting human head sizes 🗣</h1>', unsafe_allow_html=True)
+#image = Image.open('pic.gif')
+st.image('head.gif', width='15%', caption='Human Head', use_column_width=True)
 
 def load_data():
     data = pd.read_excel(data_url)
@@ -39,11 +41,20 @@ fig.for_each_trace(lambda t: t.update(name=newnames[t.name],
 st.write(fig)
 
 st.subheader("Relationship between brain weight and head size")
-fig_1 = px.scatter(data, x='head_size', y='brain_weight', color='age_range', title='Scatter plot showing relationship between brain weight and head size by the age range')
-st.write(fig_1.update_traces(showlegend=False))
+fig_1 = px.scatter(data, x='head_size', y='brain_weight', color=data['age_range'].astype(str), title='Scatter plot showing relationship between brain weight and head size by the age range')
+st.write(fig_1.update_layout(
+    legend_title_text='Age Range',
+    legend_orientation='v',
+    showlegend=True  
+))
 
-fig_2 = px.scatter(data, x='head_size', y='brain_weight', color='gender', title='Scatter plot showing relationship between brain weight and head size according to the gender')
-st.write(fig_2.update_traces(showlegend=False))
+#data['gender'] = data['gender'].astype(str)
+fig_2 = px.scatter(data, x='head_size', y='brain_weight', color= data['gender'].astype(str), title='Scatter plot showing relationship between brain weight and head size according to the gender', category_orders={'gender': ['1', '2']})
+st.write(fig_2.update_layout(
+    legend_title_text='Gender',
+    legend_orientation='v',
+    showlegend=True  
+))
 
 st.subheader("Random Forest Regressor")
 X = data[['head_size', 'age_range', 'gender']]
