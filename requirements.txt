@@ -30,7 +30,7 @@ click==8.1.7
 colorama==0.4.3
 colorlog==4.8.0
 comm==0.2.2
-command-not-found==0.3
+#command-not-found==0.3
 ConfigUpdater==3.2
 contourpy==1.2.0
 croniter==2.0.7
